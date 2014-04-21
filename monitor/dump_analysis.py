@@ -25,7 +25,7 @@ def map_(s) :
 class connection :
   def __init__(self, total_bytes, data_bytes, instance_, port_) :
     self.packets = 1
-    self.total_bytes = 60
+    self.total_bytes = total_bytes
     self.data_bytes = 0
     self.state = state_.Syncing
     self.instance = instance_
