@@ -1,2 +1,3 @@
 #!/bin/bash
-tcpdump ip -v -l | python dump_analysis.py 
+interface='eth3'
+tcpdump ip -v -l -i $interface | python dump_analysis.py 

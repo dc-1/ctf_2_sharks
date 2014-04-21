@@ -34,10 +34,17 @@ class connection :
 #constants
 NUM_CLIENTS = 3
 
+total_bytes_client = []
+data_bytes_client = []
+total_packets_client = []
+
 clients = []
 
 for i in range(0, NUM_CLIENTS) :
   clients.append({})
+  total_bytes_client.append(0)
+  data_bytes_client.append(0)
+  total_packets_client.append(0)
 
 try:
   num_newlines = 0
@@ -60,6 +67,10 @@ try:
         total_bytes = int(temp_1[len(temp_1) - 1].split(')')[0])
         data_bytes = int(temp_2[len(temp_2)-1])
 
+        total_bytes_client[bucket] = total_bytes_client[bucket] + total_bytes
+        data_bytes_client[bucket] = data_bytes_client[bucket] + data_bytes
+        total_packets_client[bucket] = total_packets_client[bucket] + 1
+
         if clients[bucket - 1].get(port, False) == False :
           clients[bucket - 1][port] = []
           clients[bucket - 1][port].append(connection(total_bytes, data_bytes, 1, port))
@@ -74,28 +85,35 @@ try:
             if 'ack' in lines[1] and c.state == state_.Syncing :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
               c.state = state_.Synced
             elif '[F.]' in lines[1] and c.state == state_.Synced :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
               c.state = state_.Fin
             elif 'ack' in lines[1] and c.state == state_.Fin :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
               c.state = state_.Fin_Ack
             elif '[P.]' in lines[1] and c.state == state_.Synced :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
             elif '[U]' or '[U.]' in lines[1] and c.state == state_.Synced :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
             elif '[R]' in lines[1] :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
               c.state = state_.Reset
+              c.packets = c.packets + 1
             elif c.state == state_.No_Syn :
               c.total_bytes = c.total_bytes + total_bytes
               c.data_bytes = c.data_bytes + data_bytes
+              c.packets = c.packets + 1
   
           elif '[S]' in lines[1] :
             instance = c.instance + 1
@@ -109,9 +127,17 @@ except KeyboardInterrupt:
   sys.stdout.flush()
   pass
 
+print "\nTOTAL CLIENT DATA"
+for k in range(0, NUM_CLIENTS) :
+  print "Client: " + str(k + 1) + " Total Bytes: " + str(total_bytes_client[k])
+  print "Client: " + str(k + 1) + " Data Bytes: " + str(data_bytes_client[k])
+  print "Client: " + str(k + 1) + " Total Packets: " + str(total_packets_client[k])
+
+print "-----------------------"
+print "\n\nPER CONNECTION DATA" 
 i = 1
 for dic in clients :
   for key,l in dic.items() :
     for connection_ in l :
-      print "Client: " + str(i) + " Port: " + str(key) + " State: " + map_(connection_.state) + " Total Bytes: " + str(connection_.total_bytes) + " Data Bytes: " + str(connection_.data_bytes) 
+      print "Client: " + str(i) + " Port: " + str(key) + " State: " + map_(connection_.state) + " Total Bytes: " + str(connection_.total_bytes) + " Data Bytes: " + str(connection_.data_bytes) + " Packets: " + str(connection_.packets)
   i = i + 1
