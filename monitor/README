@@ -4,5 +4,13 @@ just run it. It will ask for how big the average queue should be, how many pings
 
 dump_analysis.py 
 
+IMPORTANT, DO THIS BEFORE RUNNING 'sudo dump_analysis.sh'
+
+run 'ip route get 10.1.5.2'
+then get the interface (its gonna look like 'eth0' just 'eth' + a number)
+
+then go into dump_analysis.sh and 
+set interface to whatever interface you got for 'ip route get'
+
 dont run that directly. run 'sudo dump_analysis.sh'. it currently collects everything correctly, however I am having a bit of trouble figuring
 out how to display it neatly and without having to stop the program
