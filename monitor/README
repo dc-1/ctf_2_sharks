@@ -1,0 +1,8 @@
+average_time.py
+
+just run it. It will ask for how big the average queue should be, how many pings until average is printed, and how long between pings in secons
+
+dump_analysis.py 
+
+dont run that directly. run 'sudo dump_analysis.sh'. it currently collects everything correctly, however I am having a bit of trouble figuring
+out how to display it neatly and without having to stop the program
